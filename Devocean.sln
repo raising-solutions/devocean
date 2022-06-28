@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devocean.Core", "Devocean.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devocean.Tests", "Devocean.Tests\Devocean.Tests.csproj", "{8B00EBC9-D5FA-4E00-B5A6-EB21652F2A1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Devocean.Aws", "Devocean.Aws\Devocean.Aws.csproj", "{1DF797FD-9DE0-4B14-83CC-C437410F237E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{8B00EBC9-D5FA-4E00-B5A6-EB21652F2A1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B00EBC9-D5FA-4E00-B5A6-EB21652F2A1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B00EBC9-D5FA-4E00-B5A6-EB21652F2A1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DF797FD-9DE0-4B14-83CC-C437410F237E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DF797FD-9DE0-4B14-83CC-C437410F237E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DF797FD-9DE0-4B14-83CC-C437410F237E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DF797FD-9DE0-4B14-83CC-C437410F237E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
