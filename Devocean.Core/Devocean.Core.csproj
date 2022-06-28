@@ -6,6 +6,12 @@
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>DeveloperOcean</Authors>
+        <Description>Devocean.Core is a set of clean architecture base classes and helpers inteded to help you create simple clean architecture projects</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/raising-solutions/devocean</RepositoryUrl>
+        <PackageVersion>1.0.10</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,6 +20,7 @@
         <PackageReference Include="FluentValidation" Version="11.0.1" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.0.1" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.1" />
+        <PackageReference Include="MailKit" Version="3.3.0" />
         <PackageReference Include="MediatR" Version="10.0.1" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Devocean.Core.Entrypoints.Web.Common;
 
-internal sealed class ExceptionHandlingMiddleware : IMiddleware
+public sealed class ExceptionHandlingMiddleware : IMiddleware
 {
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
     public ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger) => _logger = logger;
@@ -51,11 +51,22 @@ internal sealed class ExceptionHandlingMiddleware : IMiddleware
                 });
                 break;
             default:
-                await httpContext.Response.WriteAsJsonAsync(new
+                await httpContext.Response.WriteAsJsonAsync(exception switch
                 {
-                    title = "Ocorreu um erro na operação",
-                    status = statusCode,
-                    detail = "Tente novamente ou entre em contato com o nosso atendimento",
+                    ServiceException serviceException => new
+                    {
+                        title = serviceException.Title,
+                        status = serviceException.Status,
+                        detail = serviceException.Detail,
+                        errors = serviceException.Errors
+                    },
+                    _ => new
+                    {
+                        title = "Ocorreu um erro na operação",
+                        status = statusCode,
+                        detail = "Tente novamente ou entre em contato com o nosso atendimento",
+                        errors = new List<string>()
+                    }
                 });
                 break;
         }
@@ -64,9 +75,10 @@ internal sealed class ExceptionHandlingMiddleware : IMiddleware
     private static int GetStatusCode(Exception exception) =>
         exception switch
         {
-            // BadRequestException => StatusCodes.Status400BadRequest,
+            //BadRequestException => StatusCodes.Status400BadRequest,
             ResourceNotFoundException => StatusCodes.Status404NotFound,
             ValidationException => StatusCodes.Status422UnprocessableEntity,
+            ServiceException serviceException => serviceException.Status,
             _ => StatusCodes.Status500InternalServerError
         };
 

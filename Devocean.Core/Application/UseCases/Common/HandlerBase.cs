@@ -1,13 +1,15 @@
 using AutoMapper;
 using Devocean.Core.Application.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Devocean.Core.Application.UseCases.Common;
 
 public abstract class HandlerBase<TRequest, TResponse, TDbContext> : IRequestHandler<TRequest, TResponse?> 
     where TRequest : IRequest<TResponse?>
-    where TDbContext : DbContext, IDbContext
+    where TDbContext : IDbContext
 {
     protected readonly TDbContext _dbContext;
     protected readonly IMapper _mapper;

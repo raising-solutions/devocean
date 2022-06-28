@@ -5,12 +5,18 @@ namespace Devocean.Core.Application.Mappers.Common;
 
 public class AutomapperProfile : Profile
 {
+    public static List<Assembly> IncludedAssemblies = new();
     public AutomapperProfile()
     {
-        var types = Assembly.GetExecutingAssembly()
-            .GetExportedTypes().Where(type => type.GetInterfaces()
+        IncludedAssemblies.Add(Assembly.GetExecutingAssembly());
+        IncludedAssemblies.Add(Assembly.GetCallingAssembly());
+
+        var entryAssembly = Assembly.GetEntryAssembly();
+        if (entryAssembly != null) IncludedAssemblies.Add(entryAssembly);
+        
+        var types = IncludedAssemblies.SelectMany(assembly => assembly.GetExportedTypes().Where(type => type.GetInterfaces()
                 .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAutomapFrom<>)))
-            .ToList();
+            .ToList());
 
         foreach (var type in types)
         {

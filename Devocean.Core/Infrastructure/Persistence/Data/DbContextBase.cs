@@ -1,20 +1,22 @@
 using System.Reflection;
 using Devocean.Core.Application.Interfaces;
 using Devocean.Core.Domain.common;
+using Devocean.Core.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Devocean.Core.Infrastructure.Persistence.Data;
 
-public abstract class DbContextBase : DbContext, IDbContext
+public abstract class DbContextBase<TDbContext> : DbContext, IDbContext
+    where TDbContext : DbContext
 {
-    private readonly IDateTime _dateTime;
+    private readonly IDateTime? _dateTime;
     private readonly string? _schema;
 
-    protected DbContextBase(DbContextOptions<DbContextBase> options,
-        IDateTime dateTime, string? schema = null) : base(options)
+    protected DbContextBase(DbContextOptions<TDbContext> options,
+        IDateTime? dateTime = null, string? schema = null) : base(options)
     {
-        _dateTime = dateTime;
+        _dateTime = dateTime ?? new DateTimeService();
         _schema = schema;
     }
 
@@ -88,9 +90,9 @@ public abstract class DbContextBase : DbContext, IDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        if(!string.IsNullOrEmpty(_schema))
+        if (!string.IsNullOrEmpty(_schema))
             modelBuilder.HasDefaultSchema(_schema);
-        
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetCallingAssembly());
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         var entryAssembly = Assembly.GetEntryAssembly();
