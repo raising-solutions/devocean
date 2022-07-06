@@ -1,4 +1,4 @@
-namespace Devocean.Aws.Sns.UseCases;
+namespace Devocean.Aws.Sns;
 
 public enum SmsType
 {

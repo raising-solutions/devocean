@@ -11,7 +11,7 @@
         <Description>Devocean.Core is a set of clean architecture base classes and helpers inteded to help you create simple clean architecture projects</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/raising-solutions/devocean</RepositoryUrl>
-        <PackageVersion>1.0.10</PackageVersion>
+        <PackageVersion>1.0.20</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>

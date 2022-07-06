@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit.Abstractions;
 
 namespace Devocean.Tests;
@@ -21,7 +20,7 @@ public abstract class IntegrationTestBase<TStartup, TDbContext> : IDisposable
     private readonly bool _shouldMigrate;
     static readonly object _locker = new();
 
-    protected CompareLogic _compareLogic;
+    protected CompareLogic CompareLogic { get; set; }
     protected ITestOutputHelper TestOutputHelper { get; set; }
     protected TDbContext DbContext { get; set; }
     protected IMapper Mapper { get; set; }
@@ -31,7 +30,7 @@ public abstract class IntegrationTestBase<TStartup, TDbContext> : IDisposable
     protected IntegrationTestBase(CompareLogic compareLogic, ITestOutputHelper testOutputHelper, TDbContext dbContext,
         IMapper mapper, WebApplicationFactory<TStartup> factory, HttpClient client)
     {
-        _compareLogic = compareLogic;
+        CompareLogic = compareLogic;
         TestOutputHelper = testOutputHelper;
         DbContext = dbContext;
         Mapper = mapper;
@@ -40,7 +39,6 @@ public abstract class IntegrationTestBase<TStartup, TDbContext> : IDisposable
     }
 
     protected IntegrationTestBase(ITestOutputHelper testOutputHelper,
-        Func<IWebHostBuilder, Action<DbContextOptionsBuilder>> dbContextOptionsBuilder,
         bool shouldEnsureDeleted = false, bool shouldEnsureCreated = false,
         bool shouldMigrate = false,
         Action<TDbContext>? seedFunc = null,
@@ -50,22 +48,29 @@ public abstract class IntegrationTestBase<TStartup, TDbContext> : IDisposable
         _shouldEnsureCreated = shouldEnsureCreated;
         _shouldMigrate = shouldMigrate;
         TestOutputHelper = testOutputHelper;
-        _compareLogic = new CompareLogic();
-        
-        AutomapperProfile.IncludedAssemblies.Add(typeof(Program).Assembly);
-        if (automapperProfileAssembly != null) AutomapperProfile.IncludedAssemblies.Add(automapperProfileAssembly);
+        CompareLogic = new CompareLogic();
 
-        Factory = new WebApplicationFactory<TStartup>()
+        if (automapperProfileAssembly != null) AutomapperProfile.IncludeAssembly(automapperProfileAssembly);
+
+        SetFactory(new WebApplicationFactory<TStartup>()
             .WithWebHostBuilder(builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    services.AddAutoMapper(typeof(AutomapperProfile).Assembly);
-                    services.AddDbContext<TDbContext>(dbContextOptionsBuilder(builder));
-                });
-                // ... Configure test services
-            });
+                builder.ConfigureServices(
+                    serviceCollection => ConfigureInjectedServices(serviceCollection, builder));
+            }));
 
+        lock (_locker)
+        {
+            if (_shouldEnsureDeleted) DbContext.Database.EnsureDeleted();
+            if (_shouldMigrate) DbContext.Database.Migrate();
+            if (_shouldEnsureCreated) DbContext.Database.EnsureCreated();
+            seedFunc?.Invoke(DbContext);
+        }
+    }
+
+    protected void SetFactory(WebApplicationFactory<TStartup> webApplicationFactory)
+    {
+        Factory = webApplicationFactory;
         Client = Factory.CreateClient();
         var serviceScope = Factory.Services.CreateScope();
         Mapper = serviceScope.ServiceProvider.GetRequiredService<IMapper>();
@@ -73,19 +78,81 @@ public abstract class IntegrationTestBase<TStartup, TDbContext> : IDisposable
                         .ServiceProvider
                         .GetRequiredService(typeof(TDbContext)) as TDbContext
                     ?? throw new NullReferenceException("[DbContext] cannot be null");
+    }
 
-        lock (_locker)
-        {
-            if (_shouldEnsureDeleted) DbContext.Database.EnsureDeleted();
-            if (_shouldEnsureCreated) DbContext.Database.EnsureCreated();
-            if (_shouldMigrate) DbContext.Database.Migrate();
-            seedFunc?.Invoke(DbContext);
-        }
+    protected virtual void ConfigureInjectedServices(IServiceCollection serviceCollection,
+        IWebHostBuilder webHostBuilder)
+    {
     }
 
     public void Dispose()
     {
         DbContext.Dispose();
+        Factory.Dispose();
+        Client.Dispose();
+    }
+}
+
+public abstract class IntegrationTestBase<TStartup> : IDisposable
+    where TStartup : class
+{
+    private readonly bool _shouldEnsureDeleted;
+    private readonly bool _shouldEnsureCreated;
+    private readonly bool _shouldMigrate;
+    static readonly object _locker = new();
+
+    protected CompareLogic CompareLogic { get; set; }
+    protected ITestOutputHelper TestOutputHelper { get; set; }
+    protected IMapper Mapper { get; set; }
+    protected WebApplicationFactory<TStartup> Factory { get; set; }
+    protected HttpClient Client { get; set; }
+
+    protected IntegrationTestBase(CompareLogic compareLogic, ITestOutputHelper testOutputHelper,
+        IMapper mapper, WebApplicationFactory<TStartup> factory, HttpClient client)
+    {
+        CompareLogic = compareLogic;
+        TestOutputHelper = testOutputHelper;
+        Mapper = mapper;
+        Factory = factory;
+        Client = client;
+    }
+
+    protected IntegrationTestBase(ITestOutputHelper testOutputHelper,
+        bool shouldEnsureDeleted = false, bool shouldEnsureCreated = false,
+        bool shouldMigrate = false,
+        Assembly? automapperProfileAssembly = null)
+    {
+        _shouldEnsureDeleted = shouldEnsureDeleted;
+        _shouldEnsureCreated = shouldEnsureCreated;
+        _shouldMigrate = shouldMigrate;
+        TestOutputHelper = testOutputHelper;
+        CompareLogic = new CompareLogic();
+
+        if (automapperProfileAssembly != null) AutomapperProfile.IncludeAssembly(automapperProfileAssembly);
+
+        SetFactory(new WebApplicationFactory<TStartup>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices(
+                    serviceCollection => ConfigureInjectedServices(serviceCollection, builder));
+            }));
+    }
+
+    protected void SetFactory(WebApplicationFactory<TStartup> webApplicationFactory)
+    {
+        Factory = webApplicationFactory;
+        Client = Factory.CreateClient();
+        var serviceScope = Factory.Services.CreateScope();
+        Mapper = serviceScope.ServiceProvider.GetRequiredService<IMapper>();
+    }
+
+    protected virtual void ConfigureInjectedServices(IServiceCollection serviceCollection,
+        IWebHostBuilder webHostBuilder)
+    {
+    }
+
+    public void Dispose()
+    {
         Factory.Dispose();
         Client.Dispose();
     }

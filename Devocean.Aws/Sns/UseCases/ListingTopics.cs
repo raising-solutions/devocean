@@ -48,7 +48,7 @@ public class ListTopics : IRequest<ListTopics.Response>
         NextToken
     }
 
-    public class Handler : HandlerBase<ListTopics, Response>
+    public class Handler : HandlerBase<ListTopics, ListTopics.Response>
     {
         private readonly IAmazonSimpleNotificationService _notificationService;
 

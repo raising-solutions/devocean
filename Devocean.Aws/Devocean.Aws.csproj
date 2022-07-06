@@ -8,6 +8,7 @@
         <Authors>DeveloperOcean</Authors>
         <Description>Devocean.Aws is a set of UseCases and Helpers focused on AWS services consume and provision.</Description>
         <RepositoryUrl>https://github.com/raising-solutions/devocean</RepositoryUrl>
+        <PackageVersion>1.0.1</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>

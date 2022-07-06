@@ -75,7 +75,8 @@ public sealed class ExceptionHandlingMiddleware : IMiddleware
     private static int GetStatusCode(Exception exception) =>
         exception switch
         {
-            //BadRequestException => StatusCodes.Status400BadRequest,
+            InvalidOperationException => StatusCodes.Status400BadRequest,
+            ArgumentNullException => StatusCodes.Status400BadRequest,
             ResourceNotFoundException => StatusCodes.Status404NotFound,
             ValidationException => StatusCodes.Status422UnprocessableEntity,
             ServiceException serviceException => serviceException.Status,
@@ -85,8 +86,8 @@ public sealed class ExceptionHandlingMiddleware : IMiddleware
     private static string GetTitle(Exception exception) =>
         exception switch
         {
-            ResourceNotFoundException => "Recurso não encontrado",
-            ValidationException applicationException => "Erro de Validação",
+            ResourceNotFoundException => "Resource not found",
+            ValidationException applicationException => "Validation Error",
             _ => "Server Error"
         };
 
@@ -94,7 +95,7 @@ public sealed class ExceptionHandlingMiddleware : IMiddleware
     {
         if (exception is ValidationException validationException)
         {
-            return validationException.Errors;//.Select(error => new Error(error));
+            return validationException.Errors;
         }
 
         return null;

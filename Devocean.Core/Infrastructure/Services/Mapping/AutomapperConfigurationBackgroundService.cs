@@ -30,7 +30,7 @@ public class AutomapperConfigurationBackgroundService : BackgroundService
         _logger.LogInformation(
             "AutomapperConfigurationService is working.");
 
-        using var scope = Services.CreateScope();
+        await using var scope = Services.CreateAsyncScope();
         var mapperConfiguration = scope.ServiceProvider.GetRequiredService<AutoMapper.IConfigurationProvider>();
         mapperConfiguration.CompileMappings();
         mapperConfiguration.AssertConfigurationIsValid();

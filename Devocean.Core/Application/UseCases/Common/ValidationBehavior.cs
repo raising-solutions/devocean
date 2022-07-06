@@ -20,9 +20,9 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
             var failures = validationResults
                 .SelectMany(r => r.Errors)
                 .Where(f => f != null)
-                .GroupBy(x => x.PropertyName, x => x.ErrorMessage,
-                 (propertyName, errorMessages) => 
-                     new ValidationFailure(propertyName, String.Join(", ", errorMessages.Distinct())))
+                // .GroupBy(x => x.PropertyName, x => x.ErrorMessage,
+                //  (propertyName, errorMessages) => 
+                //      new ValidationFailure(propertyName, String.Join(", ", errorMessages.Distinct())))
                 .ToList();
             if (failures.Count != 0)
                 throw new ValidationException(failures);

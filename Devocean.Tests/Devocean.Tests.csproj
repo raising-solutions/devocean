@@ -9,7 +9,7 @@
         <Description>Devocean.Tests is a set of base classes and helpers inteded to support implementing integration and unit tests on projects based on Devocean.Core</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/raising-solutions/devocean</RepositoryUrl>
-        <PackageVersion>1.0.5</PackageVersion>
+        <PackageVersion>1.0.17</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,7 +18,7 @@
         <PackageReference Include="Bogus" Version="34.0.2" />
         <PackageReference Include="Cake.Coverlet" Version="2.5.4" />
         <PackageReference Include="CompareNETObjects" Version="4.77.0" />
-        <PackageReference Include="Devocean.Core" Version="1.0.8" />
+        <PackageReference Include="Devocean.Core" Version="1.0.19" />
         <PackageReference Include="FluentAssertions" Version="6.6.0" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.4" />
