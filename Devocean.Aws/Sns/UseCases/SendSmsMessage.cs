@@ -15,7 +15,6 @@ public class SendSmsMessage : IRequest<SendSmsMessage.Response>
 {
     public string Number { get; }
     public string Message { get; }
-    
     public SmsType SmsType { get; }
 
     public SendSmsMessage(string number, string message, SmsType smsType)
@@ -56,7 +55,7 @@ public class SendSmsMessage : IRequest<SendSmsMessage.Response>
         [Description("Number is required")] Number
     }
 
-    public class Handler : HandlerBase<SendSmsMessage, SendSmsMessage.Response>
+    public class Handler : HandlerBase<SendSmsMessage, Response>
     {
         private readonly ILogger<Handler> _logger;
         private readonly IAmazonSimpleNotificationService _notificationService;

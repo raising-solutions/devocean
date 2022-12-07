@@ -8,7 +8,7 @@ public static class FileUtils
             throw new ArgumentNullException(nameof(extension));
 
         if (extension.StartsWith("."))
-            extension = extension.Substring(1);
+            extension = extension.Substring(1).ToLowerInvariant();
 
         return MimeTypes[extension];
     }

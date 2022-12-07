@@ -2,6 +2,7 @@ using System.Reflection;
 using Devocean.Core.Application.Interfaces;
 using Devocean.Core.Domain.common;
 using Devocean.Core.Infrastructure.Services;
+using Devocean.Core.Infrastructure.Services.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -10,13 +11,16 @@ namespace Devocean.Core.Infrastructure.Persistence.Data;
 public abstract class DbContextBase<TDbContext> : DbContext, IDbContext
     where TDbContext : DbContext
 {
-    private readonly IDateTime? _dateTime;
+    private readonly IDateTime _dateTime;
+    private readonly OperationContext? _operationContext;
     private readonly string? _schema;
 
     protected DbContextBase(DbContextOptions<TDbContext> options,
+        Factory<OperationContext>? operationContextFactory = null,
         IDateTime? dateTime = null, string? schema = null) : base(options)
     {
         _dateTime = dateTime ?? new DateTimeService();
+        _operationContext = operationContextFactory?.Get();
         _schema = schema;
     }
 
@@ -70,11 +74,11 @@ public abstract class DbContextBase<TDbContext> : DbContext, IDbContext
         switch (entry.State)
         {
             case EntityState.Added:
-                entity.CreatedBy = null;
+                entity.CreatedBy = _operationContext?.UserName;
                 entity.Created = _dateTime.Now;
                 break;
             case EntityState.Modified:
-                entity.LastModifiedBy = null;
+                entity.LastModifiedBy = _operationContext?.UserName;
                 entity.LastModified = _dateTime.Now;
                 break;
             case EntityState.Detached:
@@ -84,7 +88,7 @@ public abstract class DbContextBase<TDbContext> : DbContext, IDbContext
             case EntityState.Deleted:
                 break;
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(entry.State));
         }
     }
 

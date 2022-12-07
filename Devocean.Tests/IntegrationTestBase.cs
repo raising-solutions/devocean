@@ -6,7 +6,10 @@ using KellermanSoftware.CompareNetObjects;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog.Events;
 using Xunit.Abstractions;
 
 namespace Devocean.Tests;
@@ -25,6 +28,7 @@ public abstract class IntegrationTestBase<TStartup, TDbContext> : IDisposable
     protected TDbContext DbContext { get; set; }
     protected IMapper Mapper { get; set; }
     protected WebApplicationFactory<TStartup> Factory { get; set; }
+    protected IConfiguration Configuration { get; set; }
     protected HttpClient Client { get; set; }
 
     protected IntegrationTestBase(CompareLogic compareLogic, ITestOutputHelper testOutputHelper, TDbContext dbContext,
@@ -73,11 +77,21 @@ public abstract class IntegrationTestBase<TStartup, TDbContext> : IDisposable
         Factory = webApplicationFactory;
         Client = Factory.CreateClient();
         var serviceScope = Factory.Services.CreateScope();
+        Configuration = serviceScope.ServiceProvider.GetService<IConfiguration>();
+        SetLogLevel(LogEventLevel.Information);
         Mapper = serviceScope.ServiceProvider.GetRequiredService<IMapper>();
         DbContext = serviceScope
                         .ServiceProvider
                         .GetRequiredService(typeof(TDbContext)) as TDbContext
                     ?? throw new NullReferenceException("[DbContext] cannot be null");
+    }
+    
+    protected void SetLogLevel(LogEventLevel logLevel)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Is(logLevel)
+            .WriteTo.XunitTestOutput(TestOutputHelper)
+            .CreateLogger();
     }
 
     protected virtual void ConfigureInjectedServices(IServiceCollection serviceCollection,
@@ -96,14 +110,10 @@ public abstract class IntegrationTestBase<TStartup, TDbContext> : IDisposable
 public abstract class IntegrationTestBase<TStartup> : IDisposable
     where TStartup : class
 {
-    private readonly bool _shouldEnsureDeleted;
-    private readonly bool _shouldEnsureCreated;
-    private readonly bool _shouldMigrate;
-    static readonly object _locker = new();
-
     protected CompareLogic CompareLogic { get; set; }
     protected ITestOutputHelper TestOutputHelper { get; set; }
     protected IMapper Mapper { get; set; }
+    protected IConfiguration Configuration { get; set; }
     protected WebApplicationFactory<TStartup> Factory { get; set; }
     protected HttpClient Client { get; set; }
 
@@ -118,13 +128,8 @@ public abstract class IntegrationTestBase<TStartup> : IDisposable
     }
 
     protected IntegrationTestBase(ITestOutputHelper testOutputHelper,
-        bool shouldEnsureDeleted = false, bool shouldEnsureCreated = false,
-        bool shouldMigrate = false,
         Assembly? automapperProfileAssembly = null)
     {
-        _shouldEnsureDeleted = shouldEnsureDeleted;
-        _shouldEnsureCreated = shouldEnsureCreated;
-        _shouldMigrate = shouldMigrate;
         TestOutputHelper = testOutputHelper;
         CompareLogic = new CompareLogic();
 
@@ -144,6 +149,16 @@ public abstract class IntegrationTestBase<TStartup> : IDisposable
         Client = Factory.CreateClient();
         var serviceScope = Factory.Services.CreateScope();
         Mapper = serviceScope.ServiceProvider.GetRequiredService<IMapper>();
+        Configuration = serviceScope.ServiceProvider.GetService<IConfiguration>();
+        SetLogLevel(LogEventLevel.Information);
+    }
+    
+    protected void SetLogLevel(LogEventLevel logLevel)
+    {
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Is(logLevel)
+            .WriteTo.XunitTestOutput(TestOutputHelper)
+            .CreateLogger();
     }
 
     protected virtual void ConfigureInjectedServices(IServiceCollection serviceCollection,

@@ -9,7 +9,7 @@
         <Description>Devocean.Tests is a set of base classes and helpers inteded to support implementing integration and unit tests on projects based on Devocean.Core</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/raising-solutions/devocean</RepositoryUrl>
-        <PackageVersion>1.0.17</PackageVersion>
+        <PackageVersion>1.0.21-alpha</PackageVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,6 +35,7 @@
         <PackageReference Include="Microsoft.TestPlatform" Version="17.2.0" />
         <PackageReference Include="Moq" Version="4.17.2" />
         <PackageReference Include="Moq.EntityFrameworkCore" Version="6.0.1.2" />
+        <PackageReference Include="Serilog.Sinks.XunitTestOutput" Version="1.0.14" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <PrivateAssets>all</PrivateAssets>

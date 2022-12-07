@@ -23,6 +23,7 @@ public class AutomapperConfigurationBackgroundService : BackgroundService
             "AutomapperConfigurationService is running.");
 
         await DoWork(stoppingToken);
+        await StopAsync(stoppingToken);
     }
 
     private async Task DoWork(CancellationToken stoppingToken)
