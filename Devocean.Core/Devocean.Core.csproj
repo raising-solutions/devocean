@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
@@ -12,6 +11,7 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/raising-solutions/devocean</RepositoryUrl>
         <PackageVersion>1.0.21-alpha</PackageVersion>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -24,12 +24,12 @@
         <PackageReference Include="MediatR" Version="10.0.1" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.4" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.4">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
         <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
         <PackageReference Include="Serilog.Sinks.Seq" Version="5.1.1" />

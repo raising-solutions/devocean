@@ -13,15 +13,13 @@ public abstract class DbContextBase<TDbContext> : DbContext, IDbContext
 {
     private readonly IDateTime _dateTime;
     private readonly OperationContext? _operationContext;
-    private readonly string? _schema;
 
     protected DbContextBase(DbContextOptions<TDbContext> options,
         Factory<OperationContext>? operationContextFactory = null,
-        IDateTime? dateTime = null, string? schema = null) : base(options)
+        IDateTime? dateTime = null) : base(options)
     {
         _dateTime = dateTime ?? new DateTimeService();
         _operationContext = operationContextFactory?.Get();
-        _schema = schema;
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
@@ -94,9 +92,6 @@ public abstract class DbContextBase<TDbContext> : DbContext, IDbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        if (!string.IsNullOrEmpty(_schema))
-            modelBuilder.HasDefaultSchema(_schema);
-
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetCallingAssembly());
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         var entryAssembly = Assembly.GetEntryAssembly();
