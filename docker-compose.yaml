@@ -1,0 +1,23 @@
+version: "3.8"
+
+networks:
+  devocean:
+    driver: bridge
+
+volumes:
+  devocean-db_volume:
+
+services:
+  postgres-db:
+    image: postgres:14
+    ports:
+      - "6543:5432"
+    restart: always
+    volumes:
+      - devocean-db_volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "devocean"
+      POSTGRES_PASSWORD: "devocean_pass"
+      POSTGRES_DB: "devocean_example"
+    networks:
+      - devocean

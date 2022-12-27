@@ -7,10 +7,10 @@ namespace DevoceanExample.WebApi.Infrastructure.Persistence;
 
 public class ApplicationDbContext : DbContextBase<ApplicationDbContext>
 {
-    public static string Schema => "weatherForecast";
+    public static string Schema => "weather_forecast";
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
-        IDateTime dateTime) : base(options, schema: Schema)
+        IDateTime dateTime) : base(options)
     {
     }
 

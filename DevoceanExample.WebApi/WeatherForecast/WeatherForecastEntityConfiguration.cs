@@ -8,7 +8,7 @@ public class WeatherForecastEntityConfiguration : IEntityTypeConfiguration<Weath
     public void Configure(EntityTypeBuilder<WeatherForecastEntity> builder)
     {
         builder.HasKey(x => x.Id);
-        builder.ToTable("notification");
+        builder.ToTable("forecast");
         builder.Property(x => x.Id).HasColumnName("id");
         builder.Property(x => x.TemperatureC).HasColumnName("temperature_c");
         builder.Property(x => x.Date).HasColumnName("date");

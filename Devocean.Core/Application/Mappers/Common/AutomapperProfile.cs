@@ -6,7 +6,7 @@ namespace Devocean.Core.Application.Mappers.Common;
 public class AutomapperFactory
 {
     public static Assembly ConfigureScan<T>()
-    { 
+    {
         AutomapperProfile.IncludeAssembly(typeof(T).Assembly);
         return typeof(AutomapperFactory).Assembly;
     }
@@ -25,20 +25,20 @@ public class AutomapperProfile : Profile
     {
         var types = IncludedAssemblies.Values
             .SelectMany(assembly => assembly
-                .GetExportedTypes()
-                .Where(type => type
-                    .GetInterfaces()
-                    .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IAutomapFrom<>)))
-                .DistinctBy(type => type.AssemblyQualifiedName)
-                .ToList());
+                .GetExportedTypes());
 
-        foreach (var type in types)
+        var mappingInterfaces = types.Where(type =>
+            (type.GetInterface("IAutomapFrom`1") ?? type.GetInterface("IAutomapperProfile")) is not null).AsParallel();
+        
+        Parallel.ForEach(mappingInterfaces, type =>
         {
             var instance = Activator.CreateInstance(type);
             var methodInfo = type.GetMethod("Mapping")
-                             ?? type.GetInterface("IAutomapFrom`1")!.GetMethod("Mapping");
+                             ?? type.GetInterface("IAutomapFrom`1")?.GetMethod("Mapping")
+                             ?? type.GetMethod("Setup")
+                             ?? type.GetInterface("IAutomapperProfile")?.GetMethod("Setup");
 
-            methodInfo.Invoke(instance, new[] { this });
-        }
+            methodInfo?.Invoke(instance, new[] { this });
+        });
     }
 }

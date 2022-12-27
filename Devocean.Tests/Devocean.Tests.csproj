@@ -18,7 +18,7 @@
         <PackageReference Include="Bogus" Version="34.0.2" />
         <PackageReference Include="Cake.Coverlet" Version="2.5.4" />
         <PackageReference Include="CompareNETObjects" Version="4.77.0" />
-        <PackageReference Include="Devocean.Core" Version="1.0.19" />
+        <PackageReference Include="Devocean.Core" Version="1.0.21-beta" />
         <PackageReference Include="FluentAssertions" Version="6.6.0" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.4" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.4" />
